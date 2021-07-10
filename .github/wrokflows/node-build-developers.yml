@@ -4,7 +4,7 @@ on: [push]
 jobs:
   build_for_dany:
     name: Dany's Build
-    if: contains(github.ref, 'dany')
+    #if: contains(github.ref, 'dany')
     environment: dany
     runs-on: node-dany
     env:
