@@ -26,15 +26,10 @@ jobs:
     - name: 'Remove node server image'
       if: contains(env.image_list, env.NODE_IMAGE)
       run: docker rmi $NODE_IMAGE:latest
-
-    - name: 'Code pull' 
-      uses: actions/checkout@v2
-
-    - name: 'Build server container'
-      run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
-      
-    - name: 'Deploy server container'
-      run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
+    
+    - uses: actions/checkout@v2
+    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
+    - run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
 
   build_for_jasmine:
     name: Jasmine's Build
@@ -61,11 +56,6 @@ jobs:
       if: contains(env.image_list, env.NODE_IMAGE)
       run: docker rmi $NODE_IMAGE:latest
       
-    - name: 'Code pull' 
-      uses: actions/checkout@v2
-
-    - name: 'Build server container'
-      run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
-      
-    - name: 'Deploy server container'
-      run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
+    - uses: actions/checkout@v2
+    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
+    - run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
