@@ -28,9 +28,9 @@ jobs:
       run: docker rmi $NODE_IMAGE:latest
 
     - name: 'Build and Deploy server container'      
-    - uses: actions/checkout@v2
-    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
-    - run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
+      uses: actions/checkout@v2
+      run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
+      run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
 
   build_for_jasmine:
     name: Jasmine's Build
@@ -58,6 +58,6 @@ jobs:
       run: docker rmi $NODE_IMAGE:latest
       
     - name: 'Build and Deploy server container'   
-    - uses: actions/checkout@v2
-    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
-    - run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
+      uses: actions/checkout@v2
+      run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
+      run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE

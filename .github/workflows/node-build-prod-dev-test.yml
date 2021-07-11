@@ -31,10 +31,11 @@ jobs:
     - name: 'Remove node image'
       if: contains(env.image_list, env.NODE_IMAGE)
       run: docker rmi $NODE_IMAGE:latest
-      
-    - uses: actions/checkout@v2
-    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
-    - run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
+
+    - name: 'Build and Deploy server container'  
+      uses: actions/checkout@v2
+      run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
+      run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
 
   build_for_test:
     name: Test Build
@@ -60,10 +61,11 @@ jobs:
     - name: 'Remove node image'
       if: contains(env.image_list, env.NODE_IMAGE)
       run: docker rmi $NODE_IMAGE:latest
-      
-    - uses: actions/checkout@v2
-    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
-    - run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
+
+    - name: 'Build and Deploy server container'  
+      uses: actions/checkout@v2
+      run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
+      run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
   
     build_for_production:
       name: Production Build
@@ -91,6 +93,6 @@ jobs:
         run: docker rmi $NODE_IMAGE:latest
         
       - name: 'Build and Deploy server container' 
-      - uses: actions/checkout@v2
-      - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
-      - run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
+        uses: actions/checkout@v2
+        run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
+        run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
