@@ -1,10 +1,6 @@
   name: node-build-prod-dev-test
 
-on: 
-  pull_request:
-    branches:
-      - [ production, development, test ]
-    types: [ closed ]
+on: pull_request
 
 jobs:
   build_for_development:
