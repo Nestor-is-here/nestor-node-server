@@ -10,7 +10,7 @@ jobs:
     env:
       NODE_CONTAINER: 'node_dany'
       NODE_IMAGE: 'node-dany'
-      NODE_PORT: ${{ secrets.SERVER_PORT }}
+      NODE_PORT: ${{ secrets.NODE_PORT }}
     steps:
     - run: echo "running_container_list=$(echo $(docker ps --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
     - run: echo "all_containers_list=$(echo $(docker ps -a --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
