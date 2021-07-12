@@ -1,0 +1,61 @@
+name: node-build-developers
+
+on: [push]
+jobs:
+  build_for_dany:
+    name: Dany's Build
+    if: contains(github.ref, 'dany')
+    environment: dany
+    runs-on: node-dany
+    env:
+      NODE_CONTAINER: 'node_dany'
+      NODE_IMAGE: 'node-dany'
+      NODE_PORT: ${{ secrets.NODE_PORT }}
+    steps:
+    - run: echo "running_container_list=$(echo $(docker ps --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
+    - run: echo "all_containers_list=$(echo $(docker ps -a --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
+    - run: echo "image_list=$(echo $(docker images --filter "reference=$NODE_IMAGE"))" >> $GITHUB_ENV
+    - name: 'Stop node server container'
+      if: contains(env.running_container_list, env.NODE_CONTAINER)
+      run: docker stop $NODE_CONTAINER
+
+    - name: 'Remove node server container'
+      if: contains(env.all_containers_list, env.NODE_CONTAINER)
+      run: docker rm $NODE_CONTAINER
+      
+    - name: 'Remove node server image'
+      if: contains(env.image_list, env.NODE_IMAGE)
+      run: docker rmi $NODE_IMAGE:latest
+    
+    - uses: actions/checkout@v2
+    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
+    - run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
+
+  build_for_jasmine:
+    name: Jasmine's Build
+    if: contains(github.ref, 'jasmine')
+    environment: jasmine
+    runs-on: node-jasmine
+    env:
+      NODE_CONTAINER: 'node_jasmine'
+      NODE_IMAGE: 'node-jasmine'
+      NODE_PORT: ${{ secrets.NODE_PORT }}
+    steps:
+    - run: echo "running_container_list=$(echo $(docker ps --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
+    - run: echo "all_containers_list=$(echo $(docker ps -a --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
+    - run: echo "image_list=$(echo $(docker images --filter "reference=$NODE_IMAGE"))" >> $GITHUB_ENV
+    - name: 'Stop node server container'
+      if: contains(env.running_container_list, env.NODE_CONTAINER)
+      run: docker stop $NODE_CONTAINER
+
+    - name: 'Remove node server container'
+      if: contains(env.all_containers_list, env.NODE_CONTAINER)
+      run: docker rm $NODE_CONTAINER
+      
+    - name: 'Remove node image'
+      if: contains(env.image_list, env.NODE_IMAGE)
+      run: docker rmi $NODE_IMAGE:latest
+      
+    - uses: actions/checkout@v2
+    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
+    - run: docker run -p $NODE_PORT:$NODE_PORT -d --name $NODE_CONTAINER $NODE_IMAGE
