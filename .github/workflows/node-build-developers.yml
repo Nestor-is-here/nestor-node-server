@@ -1,6 +1,6 @@
 name: node-build-developers
 
-on: [push]
+on: [ push ]
 jobs:
   build_for_dany:
     name: Dany's Build
