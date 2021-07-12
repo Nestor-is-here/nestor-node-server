@@ -7,7 +7,7 @@ on:
 jobs:
   build_for_development:
     name: Development Build
-    if: ${{ github.ref == 'development' }}
+    if: ${{ github.ref == 'development' && github.event.pull_request.merged == true }}
     environment: development
     runs-on: node-development
     env:
@@ -36,7 +36,7 @@ jobs:
 
   build_for_test:
     name: Test Build
-    if: ${{ github.ref == 'test' }}
+    if: ${{ github.ref == 'test' && github.event.pull_request.merged == true }}
     environment: test
     runs-on: node-test
     env:
@@ -65,7 +65,7 @@ jobs:
   
     build_for_production:
       name: Production Build
-      if: ${{ github.ref == 'production' }}
+      if: ${{ github.ref == 'production' && github.event.pull_request.merged == true }}
       environment: production
       runs-on: node-production
       env:
