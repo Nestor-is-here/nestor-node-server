@@ -1,0 +1,93 @@
+name: node-build-prod-dev-test
+
+on: 
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  build_for_development:
+    name: Development Build
+    if: ${{ github.ref == 'development' && github.event.pull_request.merged == true }}
+    environment: development
+    runs-on: node-development
+    env:
+      NODE_CONTAINER: 'node_development'
+      NODE_IMAGE: 'node-development'
+      NODE_PORT: ${{ secrets.NODE_PORT }}
+    steps:
+    - run: echo "running_container_list=$(echo $(docker ps --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
+    - run: echo "all_containers_list=$(echo $(docker ps -a --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
+    - run: echo "image_list=$(echo $(docker images --filter "reference=$NODE_IMAGE"))" >> $GITHUB_ENV
+    - name: 'Stop node server container'
+      if: contains(env.running_container_list, env.NODE_CONTAINER)
+      run: docker stop $NODE_CONTAINER
+
+    - name: 'Remove node server container'
+      if: contains(env.all_containers_list, env.NODE_CONTAINER)
+      run: docker rm $NODE_CONTAINER
+      
+    - name: 'Remove node image'
+      if: contains(env.image_list, env.NODE_IMAGE)
+      run: docker rmi $NODE_IMAGE:latest
+      
+    - uses: actions/checkout@v2
+    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
+    - run: docker run -p $NODE_PORT:$NODE_PORT -d --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE
+
+  build_for_test:
+    name: Test Build
+    if: ${{ github.ref == 'test' && github.event.pull_request.merged == true }}
+    environment: test
+    runs-on: node-test
+    env:
+      NODE_CONTAINER: 'node_test'
+      NODE_IMAGE: 'node-test'
+      NODE_PORT: ${{ secrets.NODE_PORT }}
+    steps:
+    - run: echo "running_container_list=$(echo $(docker ps --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
+    - run: echo "all_containers_list=$(echo $(docker ps -a --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
+    - run: echo "image_list=$(echo $(docker images --filter "reference=$NODE_IMAGE"))" >> $GITHUB_ENV
+    - name: 'Stop node server container'
+      if: contains(env.running_container_list, env.NODE_CONTAINER)
+      run: docker stop $NODE_CONTAINER
+
+    - name: 'Remove node server container'
+      if: contains(env.all_containers_list, env.NODE_CONTAINER)
+      run: docker rm $NODE_CONTAINER
+      
+    - name: 'Remove node image'
+      if: contains(env.image_list, env.NODE_IMAGE)
+      run: docker rmi $NODE_IMAGE:latest
+      
+    - uses: actions/checkout@v2
+    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
+    - run: docker run -p $NODE_PORT:$NODE_PORT -d --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE
+  
+  build_for_production:
+    name: Production Build
+    if: ${{ github.ref == 'production' && github.event.pull_request.merged == true }}
+    environment: production
+    runs-on: node-production
+    env:
+      NODE_CONTAINER: 'node_production'
+      NODE_IMAGE: 'node-production'
+      NODE_PORT: ${{ secrets.NODE_PORT }}
+    steps:
+    - run: echo "running_container_list=$(echo $(docker ps --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
+    - run: echo "all_containers_list=$(echo $(docker ps -a --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
+    - run: echo "image_list=$(echo $(docker images --filter "reference=$NODE_IMAGE"))" >> $GITHUB_ENV
+    - name: 'Stop node server container'
+      if: contains(env.running_container_list, env.NODE_CONTAINER)
+      run: docker stop $NODE_CONTAINER
+
+    - name: 'Remove node server container'
+      if: contains(env.all_containers_list, env.NODE_CONTAINER)
+      run: docker rm $NODE_CONTAINER
+      
+    - name: 'Remove node image'
+      if: contains(env.image_list, env.NODE_IMAGE)
+      run: docker rmi $NODE_IMAGE:latest
+      
+    - uses: actions/checkout@v2
+    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
+    - run: docker run -p $NODE_PORT:$NODE_PORT -d --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE
