@@ -1,6 +1,5 @@
 import express  from 'express';
 import mongoose from 'mongoose'
-import { createUser } from './userModule/createUser'
 
 
 // express app initialization
@@ -14,6 +13,7 @@ app.get('/', (req,res) => {
     res.send('HELLO WORLD!')
 })
 // Routes
+const createUser = require('./userModule/createUser')
 app.use('/createUser', createUser)
 
 
