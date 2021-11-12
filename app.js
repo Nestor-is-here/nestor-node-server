@@ -1,6 +1,6 @@
 import express  from 'express'
 import mongoose from 'mongoose'
-import { createUser } from './userModule/createUser'
+// import createUser from './userModule/createUser'
 
 
 // express app initialization
@@ -14,7 +14,7 @@ app.get('/', (req,res) => {
     res.send('HELLO WORLD!')
 })
 // Routes
-app.use('/createUser', createUser)
+// app.use('/createUser', createUser)
 
 
 
