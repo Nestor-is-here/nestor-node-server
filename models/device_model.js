@@ -15,6 +15,7 @@ const deviceSchema = new Schema ({
     }
 })
 
+// creating model
 var devices = mongoose.model('device', deviceSchema)
 
 module.exports = devices
