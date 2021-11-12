@@ -2,7 +2,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import userModel from '../models/user_model'
 
-const createUser = express.Router()
+let createUser = express.Router()
 
 createUser.use(express.urlencoded({
     extended = true
