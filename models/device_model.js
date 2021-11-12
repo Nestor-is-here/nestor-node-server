@@ -8,12 +8,10 @@ const deviceSchema = new Schema ({
         unique: true
     },
     name: {
-        type: String,
-        required: true
+        type: String
     },
     description: {
-        type: String,
-        required: true
+        type: String
     }
 })
 
