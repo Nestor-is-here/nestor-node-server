@@ -1,6 +1,6 @@
 import express  from 'express';
 import mongoose from 'mongoose'
-
+import createUser from './userModule/createUser'
 
 
 // express app initialization
@@ -13,6 +13,9 @@ mongoose.connect('mongodb://developer:developer@192.168.0.105:6001/nestorDevDb')
 app.get('/', (req,res) => {
     res.send('HELLO WORLD!')
 })
+// Routes
+app.use('/createUser', createUser)
+
 
 
 // listening

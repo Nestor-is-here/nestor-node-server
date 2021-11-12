@@ -10,6 +10,8 @@ createUser.use(express.urlencoded({
 
 createUser.use(express.json())
 
-createUser.route('/createUser').post((req, res, next) => {
+createUser.route('/').post((req, res, next) => {
     res.send(req.body)
 })
+
+module.exports = createUser
