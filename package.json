@@ -1,0 +1,32 @@
+{
+  "name": "nestor-node",
+  "version": "1.0.0",
+  "description": "Node HTTP Server for Nestor",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Nestor-is-here/nestor-node-server.git"
+  },
+  "keywords": [
+    "automation",
+    "http",
+    "mqtt",
+    "home",
+    "automation"
+  ],
+  "author": "Daniel Savio, Jasmine Brice Sangeetha J",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nestor-is-here/nestor-node-server/issues"
+  },
+  "homepage": "https://github.com/Nestor-is-here/nestor-node-server#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.13.2",
+    "nodemon": "^2.0.12"
+  }
+}
