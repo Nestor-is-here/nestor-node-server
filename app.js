@@ -1,6 +1,6 @@
 import express  from 'express'
 import mongoose from 'mongoose'
-import createUser from './userModule/createUser'
+import createUser from 'userModule/createUser'
 
 
 // express app initialization
