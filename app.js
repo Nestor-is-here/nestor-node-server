@@ -1,5 +1,6 @@
-import express  from 'express';
+import express  from 'express'
 import mongoose from 'mongoose'
+import createUser from './userModule/createUser'
 
 
 // express app initialization
@@ -22,3 +23,5 @@ app.use('/createUser', createUser)
 app.listen(process.env.NODE_PORT, () => {
     console.log('PORT: ' + toString(process.env.NODE_PORT))
 })
+
+export default app

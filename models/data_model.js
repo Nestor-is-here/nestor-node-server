@@ -22,7 +22,6 @@ const dataSchema = new Schema ({
 
 var data = mongoose.model('data',dataSchema)
 
-module.exports = data
-
+export default data
 
 
