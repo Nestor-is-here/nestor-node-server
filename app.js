@@ -14,7 +14,6 @@ app.get('/', (req,res) => {
     res.send('HELLO WORLD!')
 })
 // Routes
-const createUser = require('./userModule/createUser')
 app.use('/createUser', createUser)
 
 
