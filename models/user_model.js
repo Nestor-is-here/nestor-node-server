@@ -1,7 +1,6 @@
 import mongoose from 'mongoose'
 import deviceModel from './device_model.js'
-
-const Schema = mongoose
+const { Schema } = mongoose
 
 const UserSchema = new Schema ({
     userId: {
