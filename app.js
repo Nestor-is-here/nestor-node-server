@@ -8,7 +8,12 @@ const app = express()
 
 
 // connect to database
-mongoose.connect('mongodb://developer:developer@192.168.0.105:6001/nestorDevDb').then( console.log('DB Connected')).catch((err) => console.log(err.reason))
+const url = 'mongodb://developer:developer@192.168.0.105:6001/nestorDevDb';
+const connect = mongoose.connect(url, {useNewUrlParser: true});
+
+connect.then((db) => {
+    console.log("Connected correctly to database server");
+}, (err) => { console.log(err); });
 
 app.get('/', (req,res) => {
     res.send('HELLO WORLD!')

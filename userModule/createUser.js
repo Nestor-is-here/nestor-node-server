@@ -5,7 +5,7 @@ import userModel from '../models/user_model'
 let createUser = express.Router()
 
 createUser.use(express.urlencoded({
-    extended = true
+    extended: true
 }))
 
 createUser.use(express.json())
