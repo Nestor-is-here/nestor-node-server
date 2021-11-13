@@ -14,14 +14,18 @@ const UserSchema = new Schema ({
     phoneNumber: {
         type: String
     },
-    memberList: [
-        String
-    ],
-    guestList: [
-        String
-    ],
-    deviceList: [deviceModel]
-
+    memberList: {
+        type: [String],
+        default: []
+    },
+    guestList: {
+        type: [String],
+        default: []
+    },
+    deviceList: {
+        type: [deviceModel],
+        default: []
+    }
 },
 {
     timestamps: true
