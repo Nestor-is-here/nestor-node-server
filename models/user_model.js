@@ -9,22 +9,27 @@ const UserSchema = new Schema ({
         required: true
     },
     userName: {
-        type: String
+        type: String,
+        required: true
     },
     phoneNumber: {
-        type: String
+        type: String,
+        required: true
     },
     memberList: {
         type: [String],
-        default: []
+        default: [],
+        required: true
     },
     guestList: {
         type: [String],
-        default: []
+        default: [],
+        required: true
     },
     deviceList: {
         type: [deviceModel],
-        default: []
+        default: [],
+        required: true
     }
 },
 {
