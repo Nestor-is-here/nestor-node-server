@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { deviceModel } from 'device_model'
+import { deviceModel } from './device_model'
 const { Schema } = mongoose
 
 const UserSchema = new Schema ({
