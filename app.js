@@ -14,7 +14,12 @@ const url = 'mongodb://developer:developer@192.168.0.105:6001/nestorDevDb';
 // connect.then((db) => {
 //     console.log("Connected correctly to database server");
 // }, (err) => { console.log(err); });
-mongoose.connect(url,{useNewUrlParser: true}).then( console.log('DB Connected')).catch((err) => console.log(err.reason))
+mongoose.connect(url,{
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then( console.log('DB Connected'))
+.catch((err) => console.log(err.reason))
 
 app.get('/', (req,res) => {
     res.send('HELLO WORLD!')
