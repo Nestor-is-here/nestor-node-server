@@ -11,7 +11,7 @@ createUser.use(express.urlencoded({
 createUser.use(express.json())
 
 createUser.route('/').post((req, res, next) => {
-    res.send(req.body)
+    res.send(req.body.userName)
 })
 
 export default createUser

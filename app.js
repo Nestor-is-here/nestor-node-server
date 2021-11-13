@@ -9,11 +9,6 @@ const app = express()
 
 // connect to database
 const url = 'mongodb://developer:developer@192.168.0.105:6001/nestorDevDb';
-// const connect = mongoose.connect(url, );
-
-// connect.then((db) => {
-//     console.log("Connected correctly to database server");
-// }, (err) => { console.log(err); });
 mongoose.connect(url,{
     useNewUrlParser: true,
     useUnifiedTopology: true
