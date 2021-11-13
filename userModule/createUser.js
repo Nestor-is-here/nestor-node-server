@@ -1,6 +1,6 @@
 import express from 'express'
 import mongoose from 'mongoose'
-import userModel from '../models/user_model'
+import userModel from '../models/user_model.js'
 
 let createUser = express.Router()
 
