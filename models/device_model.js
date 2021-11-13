@@ -15,6 +15,4 @@ const deviceSchema = new Schema ({
     }
 })
 
-var devices = mongoose.model('device', deviceSchema)
-
-export default devices
+export default deviceSchema
