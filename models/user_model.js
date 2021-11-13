@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { devices } from './device_model.js'
+import devices from './device_model.js'
 const { Schema } = mongoose
 
 const UserSchema = new Schema ({
@@ -20,7 +20,7 @@ const UserSchema = new Schema ({
     guestList: [
         String
     ],
-    deviceList: [deviceModel]
+    deviceList: [devices]
 
 },
 {
