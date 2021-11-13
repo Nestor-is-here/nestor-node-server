@@ -3,7 +3,7 @@ import deviceModel from './device_model.js'
 
 const Schema = mongoose
 
-const UserSchema = Schema ({
+const UserSchema = new Schema ({
     userId: {
         type: String,
         unique: true,
