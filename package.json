@@ -27,6 +27,7 @@
   "homepage": "https://github.com/Nestor-is-here/nestor-node-server#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "latest-version": "^6.0.0",
     "ravendb": "^5.0.3"
   },
   "devDependencies": {

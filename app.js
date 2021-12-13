@@ -1,6 +1,7 @@
 import express  from 'express'
 import { DocumentStore } from 'ravendb'
 import createUser from './userModule/createUser.js'
+import { createNewUser } from './userModule/createNewUser.js'
 import { debug_options } from './private.js'
 import * as fs from 'fs'
 
@@ -13,7 +14,7 @@ app.get('/', (req,res) => {
 })
 // Routes
 app.use('/createUser', createUser)
-
+app.use('/createNewUser', createNewUser)
 const server_options = {
     'cert_path': undefined,
     'raven_url': undefined,
@@ -25,7 +26,7 @@ if( fs.existsSync('./private.js')) {
    server_options.cert_path = debug_options.cert_path,
    server_options.db_name = debug_options.db_name,
    server_options.raven_url = debug_options.raven_url,
-   server_options.port = debug_options.local_debug_port
+   server_options.port = debug_options.port
 }
 else {
     // deployment parameters HERE
