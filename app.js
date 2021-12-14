@@ -1,12 +1,6 @@
 import express  from 'express'
 import { DocumentStore } from 'ravendb'
 import { createUser } from './userModule/createUser.js'
-try {
-    import { debug_options } from './private.js'
-}
-catch(err) {
-    console.log('ENV build does not require private.js')
-}
 import * as fs from 'fs'
 
 
@@ -27,6 +21,7 @@ const server_options = {
 }
 
 if( fs.existsSync('./private.js')) {
+    let { debug_options } = await import('./private.js')
    server_options.cert_path = debug_options.cert_path,
    server_options.db_name = debug_options.db_name,
    server_options.raven_url = debug_options.raven_url,
