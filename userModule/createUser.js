@@ -26,4 +26,4 @@ createUser.route('/').get((req, res, next) => {
     })
 })
 
-export default createUser
+export { createUser }

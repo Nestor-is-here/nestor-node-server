@@ -1,6 +1,6 @@
 import express  from 'express'
 import { DocumentStore } from 'ravendb'
-import createUser from './userModule/createUser.js'
+import { createUser } from './userModule/createUser.js'
 import { createNewUser } from './userModule/createNewUser.js'
 import { debug_options } from './private.js'
 import * as fs from 'fs'

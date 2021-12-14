@@ -9,18 +9,19 @@ createNewUser.use(express.urlencoded({
 
 createNewUser.use(express.json())
 
-createNewUser.route('/').get((req,res) => {
+createNewUser.route('/').post((req,res) => {
     const session = store.openSession()
     req.body['@metadata'] = {
-        '@collection': 'Tests'
+        '@collection': 'User'
     }
     const user = req.body
-
-
-    session.store(user, 'test_user')
+    //users| for incrementing identity in collection
+    session.store(user,"users|")
     session.saveChanges();
 
-    res.send(req.body)
+    res.statusCode = 200
+    res.statusMessage = "User added successfully"
+    res.status(res.statusCode).send(res.statusMessage)
 })
 
 export { createNewUser } 
