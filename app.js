@@ -1,7 +1,6 @@
 import express  from 'express'
 import { DocumentStore } from 'ravendb'
 import { createUser } from './userModule/createUser.js'
-import { debug_options } from './private.js'
 import * as fs from 'fs'
 
 
@@ -22,6 +21,7 @@ const server_options = {
 }
 
 if( fs.existsSync('./private.js')) {
+   import { debug_options } from './private.js'
    server_options.cert_path = debug_options.cert_path,
    server_options.db_name = debug_options.db_name,
    server_options.raven_url = debug_options.raven_url,
