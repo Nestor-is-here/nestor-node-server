@@ -2,6 +2,7 @@ import express  from 'express'
 import { DocumentStore } from 'ravendb'
 import { createUser } from './userModule/createUser.js'
 import { createNewUser } from './userModule/createNewUser.js'
+import { getUsers } from './userModule/getUsers.js'
 import { debug_options } from './private.js'
 import * as fs from 'fs'
 
@@ -15,6 +16,7 @@ app.get('/', (req,res) => {
 // Routes
 app.use('/createUser', createUser)
 app.use('/createNewUser', createNewUser)
+app.use('/getUsers',getUsers)
 const server_options = {
     'cert_path': undefined,
     'raven_url': undefined,
