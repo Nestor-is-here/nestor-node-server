@@ -10,7 +10,7 @@ ENV DB_URL=${DB_URL}
 ENV DB=${DB}
 WORKDIR /app
 COPY ["package.json", "package-lock.json", "./"]
-RUN mkdir /app/certs
+RUN mkdir certs
 RUN npm install
 COPY . .
 EXPOSE ${NODE_PORT}
