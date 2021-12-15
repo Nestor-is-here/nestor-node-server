@@ -1,9 +1,7 @@
 import express  from 'express'
 import { DocumentStore } from 'ravendb'
 import { createUser } from './userModule/createUser.js'
-import { createNewUser } from './userModule/createNewUser.js'
 import { getUsers } from './userModule/getUsers.js'
-import { debug_options } from './private.js'
 import * as fs from 'fs'
 
 
@@ -15,7 +13,6 @@ app.get('/', (req,res) => {
 })
 // Routes
 app.use('/createUser', createUser)
-app.use('/createNewUser', createNewUser)
 app.use('/getUsers',getUsers)
 const server_options = {
     'cert_path': undefined,
@@ -25,6 +22,7 @@ const server_options = {
 }
 
 if( fs.existsSync('./private.js')) {
+    let { debug_options } = await import('./private.js')
    server_options.cert_path = debug_options.cert_path,
    server_options.db_name = debug_options.db_name,
    server_options.raven_url = debug_options.raven_url,
@@ -32,7 +30,11 @@ if( fs.existsSync('./private.js')) {
 }
 else {
     // deployment parameters HERE
+    server_options.cert_path = process.env.CERT_PATH
+    server_options.db_name = process.env.DB
+    server_options.raven_url = process.env.DB_URL
     server_options.port = process.env.NODE_PORT
+    console.log(server_options)
 }
 
 // Raven Connection
