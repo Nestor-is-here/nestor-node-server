@@ -33,6 +33,7 @@ else {
     server_options.db_name = process.env.DB
     server_options.raven_url = process.env.DB_URL
     server_options.port = process.env.NODE_PORT
+    console.log(server_options)
 }
 
 // Raven Connection
