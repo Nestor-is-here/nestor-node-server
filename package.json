@@ -5,7 +5,8 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "node app.js",
+    "devStart": "nodemon app.js"
   },
   "repository": {
     "type": "git",
@@ -26,7 +27,10 @@
   "homepage": "https://github.com/Nestor-is-here/nestor-node-server#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "mongoose": "^5.13.13",
-    "nodemon": "^2.0.12"
+    "latest-version": "^6.0.0",
+    "ravendb": "^5.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
   }
 }
