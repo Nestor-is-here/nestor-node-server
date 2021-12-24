@@ -2,6 +2,7 @@ import express  from 'express'
 import { DocumentStore } from 'ravendb'
 import { createUser } from './userModule/createUser.js'
 import { getUsers } from './userModule/getUsers.js'
+import { otpGenAndSend } from './userModule/otpGenAndSend.js'
 import * as fs from 'fs'
 
 
@@ -14,6 +15,7 @@ app.get('/', (req,res) => {
 // Routes
 app.use('/createUser', createUser)
 app.use('/getUsers',getUsers)
+app.use('/otpGenAndSend',otpGenAndSend)
 const server_options = {
     'cert_path': undefined,
     'raven_url': undefined,
