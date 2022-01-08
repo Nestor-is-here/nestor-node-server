@@ -9,38 +9,56 @@ otpGenAndSend.use(express.urlencoded({
 
 otpGenAndSend.use(express.json())
 
-otpGenAndSend.route('/').post((req,res) => {
+otpGenAndSend.route('/newUser').post(async(req,res) => {
+    const otpNew = generateRandomNumber(1000,9999)
+    console.log("otpNew ::"+otpNew)
+    const emailId = req.body.email
+    var dateTime = new Date();
     const session = store.openSession()
-    const phoneNumber = req.body.phoneNumber;
-    console.log('phone -> ' + phoneNumber)
-    getUserInfoBasedOnFlag()
-    async function getUserInfoBasedOnFlag(){
-        try{
-            const checkFlag = await getFlagValue(phoneNumber)
-            console.log("flag value is"+ checkFlag)
-            const result = await checkCondition(checkFlag)
-            console.log("result"+result)
-            if(result == true){
-                res.sendStatus(200)
-            }else{
-                res.sendStatus(500)
-            }
-        }catch(err){
-            console.log("Error in processing")
+    const authValues = {
+        'emailId': emailId,
+        'otp': otpNew,
+        'flag': 1,
+        'time': dateTime,        
+        '@metadata': {
+            '@collection': 'Authorizer'
         }
-       
     }
-    
-async function checkCondition(chkFlag){
+    console.log(authValues)
+    session.store(authValues,"otp|");
+    session.saveChanges(); 
+    res.status(200).send("OTP generated and sent for new user")
+})
+
+otpGenAndSend.route('/').post(async(req,res) => {
+    const emailId = req.body.email
+    try{
+        const checkFlag = await getFlagValue(emailId)
+        console.log("flag value is"+ checkFlag)
+        const result = await checkCondition(checkFlag,emailId)
+        console.log("result"+result)
+        if(result == true){
+            res.status(200).send("OTP is generated and sent!!")
+        }else{
+            res.status(500).send("OTP sending failed")
+        }
+    }catch(err){
+            console.log("Error in processing")
+    }      
+})
+  
+ 
+async function checkCondition(chkFlag,emailId){
+    const session = store.openSession()
     console.log("chkFlag value in checkCondition :::::"+chkFlag)
-    let result = true;
+
     if(chkFlag == 2 || chkFlag == 5){
-        const otp = betweenRandomNumber(1000, 9999)
+        const otp = generateRandomNumber(1000, 9999)
         console.log("otp is "+otp)
         var dateTime = new Date();
         console.log("DateTime is"+dateTime)
         const authValues = {
-            'phoneNumber': req.body.phoneNumber,
+            'emailId': emailId,
             'otp': otp,
             'flag': 1,
             'time': dateTime,        
@@ -48,40 +66,39 @@ async function checkCondition(chkFlag){
                 '@collection': 'Authorizer'
             }
         }
+        console.log(authValues)
         session.store(authValues,"otp|");
-        session.saveChanges();
-        result = true;
-        
+        session.saveChanges();   
+        return true;    
     }
     else{
-        result = false;
+        return false;
     }
-    console.log("RESULT SENT ::"+result)
-    return result
 }
-})
+
 //OTP Generator
-function betweenRandomNumber(min, max) {  
+function generateRandomNumber(min, max) {  
     return Math.floor(
       Math.random() * (max - min + 1) + min
     )
 }
 //check flag value before generating otp
-function getFlagValue(phoneNumber){
+function getFlagValue(emailId){
     const session = store.openSession()
     const flag = session.query({collection:'Authorizer'})
     .selectFields('flag')
-    .whereEquals('phoneNumber', phoneNumber)
+    .whereEquals('emailId', emailId)
     .orderByDescending('time')
     .first()
     .then((flagVal) => {
         return flagVal
     })
+    //Invalid Operation Exception => to be handled
     .catch((err) => {
         console.log(err)
     })
     session.saveChanges()
-    console.log("Flag inside getFlagValue function")
+    console.log("Flag inside getFlagValue function"+flag)
     return flag
 }
 
