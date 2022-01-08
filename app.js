@@ -30,9 +30,9 @@ const server_options = {
 
 if( fs.existsSync('./private.js')) {
     let { debug_options } = await import('./private.js')
-   server_options.cert_path = debug_options.cert_path,
-   server_options.db_name = debug_options.db_name,
-   server_options.raven_url = debug_options.raven_url,
+   server_options.cert_path = debug_options.cert_path
+   server_options.db_name = debug_options.db_name
+   server_options.raven_url = debug_options.raven_url
    server_options.port = debug_options.port
 }
 else {
@@ -41,7 +41,6 @@ else {
     server_options.db_name = process.env.DB
     server_options.raven_url = process.env.DB_URL
     server_options.port = process.env.NODE_PORT
-    console.log(server_options)
 }
 
 // Raven Connection
