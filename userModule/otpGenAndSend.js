@@ -19,7 +19,7 @@ otpGenAndSend.route('/newUser').post(async(req,res) => {
         'emailId': emailId,
         'otp': otpNew,
         'flag': 1,
-        'time': dateTime,        
+        'expiryTime': dateTime.setMinutes(dateTime.getMinutes() + 10),        
         '@metadata': {
             '@collection': 'Authorizer'
         }
@@ -61,7 +61,7 @@ async function checkCondition(chkFlag,emailId){
             'emailId': emailId,
             'otp': otp,
             'flag': 1,
-            'time': dateTime,        
+            'expiryTime': dateTime.setMinutes(dateTime.getMinutes() + 10),        
             '@metadata': {
                 '@collection': 'Authorizer'
             }
@@ -69,10 +69,10 @@ async function checkCondition(chkFlag,emailId){
         console.log(authValues)
         session.store(authValues,"otp|");
         session.saveChanges();   
-        return true;    
+        return true    
     }
     else{
-        return false;
+        return false
     }
 }
 
@@ -88,7 +88,7 @@ function getFlagValue(emailId){
     const flag = session.query({collection:'Authorizer'})
     .selectFields('flag')
     .whereEquals('emailId', emailId)
-    .orderByDescending('time')
+    .orderByDescending('expiryTime')
     .first()
     .then((flagVal) => {
         return flagVal

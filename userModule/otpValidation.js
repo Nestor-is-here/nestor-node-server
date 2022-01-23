@@ -16,10 +16,12 @@ otpValidation.route('/').post(async(req,res) => {
     const emailId = req.body.email
     const session = store.openSession()
     const otpInDB = await session.query({collection:'Authorizer'})
-        .selectFields('otp')
+        .selectFields('otp','flag')
         .whereEquals('emailId',emailId)
         .whereIn('flag',['2','5'])
         .orderByDescending('time')
+        .andAlso()
+        .whereLessThan('expiryTime',time)
         .first()
         .then((otpVal) => {
             console.log("otpVal"+otpVal)
@@ -30,7 +32,11 @@ otpValidation.route('/').post(async(req,res) => {
         })
     console.log("checking otpReq and otpDB are same")    
     console.log("otpfrmDB::"+otpInDB)
-    if(otp == otpInDB){
+    if(otp == otpInDB.otp){
+        const flag = 3;
+        //await session.load(otpInDB.Id);
+        otpInDB.flag = flag;
+        session.saveChanges();
         res.status(200).send("Valid user")
     }else{
         res.status(500).send("Not a valid user")
