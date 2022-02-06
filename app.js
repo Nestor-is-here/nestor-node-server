@@ -39,7 +39,7 @@ else {
     // deployment parameters HERE
     server_options.cert_path = process.env.CERT_PATH
     server_options.db_name = process.env.DB
-    server_options.mosquitto_broker_url = debug_options.MOSQUITTO_BROKER_URL
+    server_options.mosquitto_broker_url = process.env.MOSQUITTO_BROKER_URL
     server_options.raven_url = process.env.DB_URL
     server_options.port = process.env.NODE_PORT
 }
