@@ -39,7 +39,7 @@ otpValidation.route('/').post(async(req,res) => {
         session.saveChanges();
         res.status(200).send("Valid user")
     }else{
-        res.status(500).send("Not a valid user")
+        res.status(500).send("Invalid User")
     }
 
 })
