@@ -1,5 +1,4 @@
 import express, { response } from 'express'
-import { prototype } from 'stream-json/filters/FilterBase'
 import { store, mqPublisher } from  '../app.js'
 
 
@@ -16,15 +15,17 @@ prototypeSwitch.route('/').get(async (req,res) => {
     await session.query({collection: 'prototypes'})
     .first()
     .then((switchPrototype) => {
-        response = {
+        var response = {
             'state': switchPrototype.state
         }
-        res.json(response)
+        res.status(200)
+        .json(response)
+        .send()
     })
     .catch((err) => {
         console.log(err)
+        res.status((500)).send(err)
     })
-    res.send()
 })
 
 prototypeSwitch.route('/').post(async (req,res) => {
