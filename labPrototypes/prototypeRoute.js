@@ -1,4 +1,5 @@
-import express from 'express'
+import express, { response } from 'express'
+import { prototype } from 'stream-json/filters/FilterBase'
 import { store, mqPublisher } from  '../app.js'
 
 
@@ -10,9 +11,25 @@ prototypeSwitch.use(express.urlencoded({
 
 prototypeSwitch.use(express.json())
 
+prototypeSwitch.route('/').get(async (req,res) => {
+    const session = store.openSession()
+    await session.query({collection: 'prototypes'})
+    .first()
+    .then((switchPrototype) => {
+        response = {
+            'state': switchPrototype.state
+        }
+        res.json(response)
+    })
+    .catch((err) => {
+        console.log(err)
+    })
+    res.send()
+})
+
 prototypeSwitch.route('/').post(async (req,res) => {
     const session = store.openSession()
-    const state = req.body.state;
+    const state = req.body.state
     await session.query({collection: 'prototypes'})
     .first()
     .then((switchPrototype) => {
@@ -29,5 +46,6 @@ prototypeSwitch.route('/').post(async (req,res) => {
     res.send(`Switch is ${ state? 'ON':'OFF' }`)
     
 })
+
 
 export { prototypeSwitch }
