@@ -28,12 +28,23 @@ function sendOTPMail(receiverEmail, OTP) {
         from: auth.email,
         to: receiverEmail,
         subject: 'Nestor LogIn OTP',
-        text: 'Your Login OTP is ' + OTP + '. This OTP will be valid for the next 15 minutes.'
+        text: 'Your Login OTP is ' + OTP + '. This OTP will be valid for the next 10 minutes.'
     }
 
     transporter.sendMail(mailOptions, (err, info) => {
         if (err) {
-            console.log(err);
+            const session = store.openSession()
+            session.query({collection: 'ServiceStat'})
+            .first()
+            .then((service) => {
+                service.Status = false
+            })
+            .then(() => {
+                session.saveChanges()
+            }) 
+            .catch((err) => {
+                console.log(err)
+            })   
         }
         else {
             console.log('Email sent: ', info.response)

@@ -1,5 +1,6 @@
 import express from 'express'
 import { store } from  '../app.js'
+import { sendOTPMail } from './emailOtp.js'
 
 let otpGenAndSend = express.Router()
 
@@ -13,13 +14,12 @@ otpGenAndSend.route('/newUser').post(async(req,res) => {
     const otpNew = generateRandomNumber(1000,9999)
     console.log("otpNew ::"+otpNew)
     const emailId = req.body.email
-    var dateTime = new Date();
+    const expiryTime = new Date(Date.now() + 10*60000)
     const session = store.openSession()
     const authValues = {
         'emailId': emailId,
         'otp': otpNew,
-        'flag': 1,
-        'expiryTime': dateTime.setMinutes(dateTime.getMinutes() + 10),        
+        'expiryTime': expiryTime,        
         '@metadata': {
             '@collection': 'Authorizer'
         }
@@ -32,12 +32,19 @@ otpGenAndSend.route('/newUser').post(async(req,res) => {
 
 otpGenAndSend.route('/').post(async(req,res) => {
     const emailId = req.body.email
+    
     try{
-        const checkFlag = await getFlagValue(emailId)
-        console.log("flag value is"+ checkFlag)
-        const result = await checkCondition(checkFlag,emailId)
+        const result = await generateOtp(emailId)
         console.log("result"+result)
-        if(result == true){
+        let serviceName = "EmailService"
+        const session = store.openSession()
+        const isServiceUp = await session.query({collection: 'ServiceStat'})
+            .selectFields('status')
+            .whereEquals('Name',serviceName)
+            .first()
+        console.log("isServiceUp ::"+isServiceUp)    
+        if(isServiceUp == true){
+            sendOTPMail(emailId,result)
             res.status(200).send("OTP is generated and sent!!")
         }else{
             res.status(500).send("OTP sending failed")
@@ -48,32 +55,24 @@ otpGenAndSend.route('/').post(async(req,res) => {
 })
   
  
-async function checkCondition(chkFlag,emailId){
+async function generateOtp(emailId){
     const session = store.openSession()
-    console.log("chkFlag value in checkCondition :::::"+chkFlag)
-
-    if(chkFlag == 2 || chkFlag == 5){
-        const otp = generateRandomNumber(1000, 9999)
-        console.log("otp is "+otp)
-        var dateTime = new Date();
-        console.log("DateTime is"+dateTime)
-        const authValues = {
-            'emailId': emailId,
-            'otp': otp,
-            'flag': 1,
-            'expiryTime': dateTime.setMinutes(dateTime.getMinutes() + 10),        
-            '@metadata': {
-                '@collection': 'Authorizer'
-            }
+    const otp = generateRandomNumber(1000, 9999)
+    console.log("otp is "+otp)
+    //UTC Time.Change to Locale wherever needed. 
+    const expiryTime = new Date(Date.now() + 10*60000)
+    const authValues = {
+        'emailId': emailId,
+        'otp': otp,
+        'expiryTime': expiryTime,   
+        '@metadata': {
+            '@collection': 'Authorizer'
         }
-        console.log(authValues)
-        session.store(authValues,"otp|");
-        session.saveChanges();   
-        return true    
     }
-    else{
-        return false
-    }
+    console.log(authValues)
+    session.store(authValues,"otp|")
+    session.saveChanges()    
+    return otp   
 }
 
 //OTP Generator
@@ -82,26 +81,5 @@ function generateRandomNumber(min, max) {
       Math.random() * (max - min + 1) + min
     )
 }
-//check flag value before generating otp
-function getFlagValue(emailId){
-    const session = store.openSession()
-    const flag = session.query({collection:'Authorizer'})
-    .selectFields('flag')
-    .whereEquals('emailId', emailId)
-    .orderByDescending('expiryTime')
-    .first()
-    .then((flagVal) => {
-        return flagVal
-    })
-    //Invalid Operation Exception => to be handled
-    .catch((err) => {
-        console.log(err)
-    })
-    session.saveChanges()
-    console.log("Flag inside getFlagValue function"+flag)
-    return flag
-}
-
-//Sending OTP to SIM800L to be implemented
 
 export { otpGenAndSend }

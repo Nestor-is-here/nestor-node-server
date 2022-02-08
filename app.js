@@ -1,10 +1,16 @@
 import express  from 'express'
+
+// DB Driver import
 import { DocumentStore } from 'ravendb'
+
+// for private.js
+import * as fs from 'fs'
+
+// Endpoint imports
 import { createUser } from './userModule/createUser.js'
 import { getUsers } from './userModule/getUsers.js'
 import { userExists } from './userModule/userExists.js'
 import { otpGenAndSend } from './userModule/otpGenAndSend.js'
-import * as fs from 'fs'
 import { otpValidation } from './userModule/otpValidation.js'
 
 
