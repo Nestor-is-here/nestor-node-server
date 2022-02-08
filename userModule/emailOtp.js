@@ -13,7 +13,8 @@ if( fs.existsSync('private.js')) {
    auth.password = emailAuth.password
 }
 else {
-    // deployment parameters HERE
+    auth.email = process.env.EMAILID
+    auth.password = process.env.PASSWORD
 }
 
 function sendOTPMail(receiverEmail, OTP) {

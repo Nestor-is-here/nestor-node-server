@@ -17,6 +17,8 @@ jobs:
       DB_URL: ${{ secrets.DB_URL }}
       DB: ${{ secrets.DB }}
       CERT_PATH: ${{ secrets.CERT_PATH }}
+      EMAILID: ${{ secrets.EMAILID }}
+      PASSWORD: ${{ secrets.PASSWORD }}      
     steps:
     - run: echo "running_container_list=$(echo $(docker ps --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
     - run: echo "all_containers_list=$(echo $(docker ps -a --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
@@ -34,7 +36,7 @@ jobs:
       run: docker rmi $NODE_IMAGE:latest
       
     - uses: actions/checkout@v2
-    - run: docker build . --build-arg NODE_PORT=$NODE_PORT --build-arg DB_URL=$DB_URL --build-arg DB=$DB --build-arg CERT_PATH=$CERT_PATH -t $NODE_IMAGE
+    - run: docker build . --build-arg NODE_PORT=$NODE_PORT --build-arg DB_URL=$DB_URL --build-arg DB=$DB --build-arg CERT_PATH=$CERT_PATH --build-arg EMAILID=$EMAILID --build-arg PASSWORD=$PASSWORD -t $NODE_IMAGE
     - run: docker run -p $NODE_PORT:$NODE_PORT -d -v /certs:/app/certs --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE
 
   build_for_test:
@@ -49,6 +51,8 @@ jobs:
       DB_URL: ${{ secrets.DB_URL }}
       DB: ${{ secrets.DB }}
       CERT_PATH: ${{ secrets.CERT_PATH }}
+      EMAILID: ${{ secrets.EMAILID }}
+      PASSWORD: ${{ secrets.PASSWORD }}      
     steps:
     - run: echo "running_container_list=$(echo $(docker ps --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
     - run: echo "all_containers_list=$(echo $(docker ps -a --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
@@ -66,7 +70,7 @@ jobs:
       run: docker rmi $NODE_IMAGE:latest
       
     - uses: actions/checkout@v2
-    - run: docker build . --build-arg NODE_PORT=$NODE_PORT --build-arg DB_URL=$DB_URL --build-arg DB=$DB --build-arg CERT_PATH=$CERT_PATH -t $NODE_IMAGE
+    - run: docker build . --build-arg NODE_PORT=$NODE_PORT --build-arg DB_URL=$DB_URL --build-arg DB=$DB --build-arg CERT_PATH=$CERT_PATH --build-arg EMAILID=$EMAILID --build-arg PASSWORD=$PASSWORD -t $NODE_IMAGE
     - run: docker run -p $NODE_PORT:$NODE_PORT -d -v /certs:/app/certs --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE
   
   build_for_production:
