@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer'
 import * as fs from 'fs'
+import { store } from '../app.js'
 
 const auth = {
     'email': undefined,
