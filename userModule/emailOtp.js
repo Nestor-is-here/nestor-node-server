@@ -38,7 +38,7 @@ function sendOTPMail(receiverEmail, OTP) {
             session.query({collection: 'ServiceStat'})
             .first()
             .then((service) => {
-                service.Status = false
+                service.status = false
             })
             .then(() => {
                 session.saveChanges()
