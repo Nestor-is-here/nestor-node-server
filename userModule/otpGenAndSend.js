@@ -10,26 +10,6 @@ otpGenAndSend.use(express.urlencoded({
 
 otpGenAndSend.use(express.json())
 
-otpGenAndSend.route('/newUser').post(async(req,res) => {
-    const otpNew = generateRandomNumber(1000,9999)
-    console.log("otpNew ::"+otpNew)
-    const emailId = req.body.email
-    const expiryTime = new Date(Date.now() + 10*60000)
-    const session = store.openSession()
-    const authValues = {
-        'emailId': emailId,
-        'otp': otpNew,
-        'expiryTime': expiryTime,        
-        '@metadata': {
-            '@collection': 'Authorizer'
-        }
-    }
-    console.log(authValues)
-    session.store(authValues,"otp|");
-    session.saveChanges(); 
-    res.status(200).send("OTP generated and sent for new user")
-})
-
 otpGenAndSend.route('/').post(async(req,res) => {
     const emailId = req.body.email
     
