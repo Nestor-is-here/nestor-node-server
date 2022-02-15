@@ -12,11 +12,12 @@ prototypeSwitch.use(express.json())
 
 prototypeSwitch.route('/').get(async (req,res) => {
     const session = store.openSession()
-    await session.query({collection: 'prototypes'})
+    session.query({collection: 'prototypes'})
+    .whereEquals("deviceId", req.body.deviceId)
     .first()
     .then((switchPrototype) => {
         var response = {
-            'state': switchPrototype.state
+            'state': switchPrototype.appliances[req.body.applianceId].state
         }
         res.status(200)
         .json(response)
@@ -32,9 +33,10 @@ prototypeSwitch.route('/').post(async (req,res) => {
     const session = store.openSession()
     const state = req.body.state
     await session.query({collection: 'prototypes'})
+    .whereEquals("deviceId", req.body.deviceId)
     .first()
     .then((switchPrototype) => {
-        switchPrototype.state = state
+        switchPrototype.appliances[req.body.applianceId].state = state
     })
     .then(() => {
         session.saveChanges()
