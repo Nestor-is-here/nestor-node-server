@@ -14,6 +14,10 @@ jobs:
       NODE_CONTAINER: 'node_development'
       NODE_IMAGE: 'node-development'
       NODE_PORT: ${{ secrets.NODE_PORT }}
+      DB_URL: ${{ secrets.DB_URL }}
+      DB: ${{ secrets.DB }}
+      CERT_PATH: ${{ secrets.CERT_PATH }}
+      MOSQUITTO_BROKER_URL: ${{ secrets.MOSQUITTO_BROKER_URL }}
     steps:
     - run: echo "running_container_list=$(echo $(docker ps --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
     - run: echo "all_containers_list=$(echo $(docker ps -a --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
@@ -31,8 +35,8 @@ jobs:
       run: docker rmi $NODE_IMAGE:latest
       
     - uses: actions/checkout@v2
-    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
-    - run: docker run -p $NODE_PORT:$NODE_PORT -d --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE
+    - run: docker build . --build-arg NODE_PORT=$NODE_PORT --build-arg DB_URL=$DB_URL --build-arg DB=$DB --build-arg CERT_PATH=$CERT_PATH --build-arg MOSQUITTO_BROKER_URL=$MOSQUITTO_BROKER_URL -t $NODE_IMAGE
+    - run: docker run -p $NODE_PORT:$NODE_PORT -d -v /certs:/app/certs --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE
 
   build_for_test:
     name: Test Build
@@ -43,6 +47,10 @@ jobs:
       NODE_CONTAINER: 'node_test'
       NODE_IMAGE: 'node-test'
       NODE_PORT: ${{ secrets.NODE_PORT }}
+      DB_URL: ${{ secrets.DB_URL }}
+      DB: ${{ secrets.DB }}
+      CERT_PATH: ${{ secrets.CERT_PATH }}
+      MOSQUITTO_BROKER_URL: ${{ secrets.MOSQUITTO_BROKER_URL }}
     steps:
     - run: echo "running_container_list=$(echo $(docker ps --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
     - run: echo "all_containers_list=$(echo $(docker ps -a --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
@@ -60,8 +68,8 @@ jobs:
       run: docker rmi $NODE_IMAGE:latest
       
     - uses: actions/checkout@v2
-    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
-    - run: docker run -p $NODE_PORT:$NODE_PORT -d --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE
+    - run: docker build . --build-arg NODE_PORT=$NODE_PORT --build-arg DB_URL=$DB_URL --build-arg DB=$DB --build-arg CERT_PATH=$CERT_PATH --build-arg MOSQUITTO_BROKER_URL=$MOSQUITTO_BROKER_URL -t $NODE_IMAGE
+    - run: docker run -p $NODE_PORT:$NODE_PORT -d -v /certs:/app/certs --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE
   
   build_for_production:
     name: Production Build
@@ -72,6 +80,10 @@ jobs:
       NODE_CONTAINER: 'node_production'
       NODE_IMAGE: 'node-production'
       NODE_PORT: ${{ secrets.NODE_PORT }}
+      DB_URL: ${{ secrets.DB_URL }}
+      DB: ${{ secrets.DB }}
+      CERT_PATH: ${{ secrets.CERT_PATH }}
+      MOSQUITTO_BROKER_URL: ${{ secrets.MOSQUITTO_BROKER_URL }}
     steps:
     - run: echo "running_container_list=$(echo $(docker ps --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
     - run: echo "all_containers_list=$(echo $(docker ps -a --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
@@ -89,5 +101,5 @@ jobs:
       run: docker rmi $NODE_IMAGE:latest
       
     - uses: actions/checkout@v2
-    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
-    - run: docker run -p $NODE_PORT:$NODE_PORT -d --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE
+    - run: docker build . --build-arg NODE_PORT=$NODE_PORT --build-arg DB_URL=$DB_URL --build-arg DB=$DB --build-arg CERT_PATH=$CERT_PATH --build-arg MOSQUITTO_BROKER_URL=$MOSQUITTO_BROKER_URL-t $NODE_IMAGE
+    - run: docker run -p $NODE_PORT:$NODE_PORT -d -v /certs:/app/certs --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE

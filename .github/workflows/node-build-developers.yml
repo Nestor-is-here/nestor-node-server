@@ -1,6 +1,8 @@
 name: node-build-developers
 
-on: [ push ]
+on: 
+  pull_request:
+    types: [ closed ]
 jobs:
   build_for_dany:
     name: Dany's Build
@@ -11,6 +13,10 @@ jobs:
       NODE_CONTAINER: 'node_dany'
       NODE_IMAGE: 'node-dany'
       NODE_PORT: ${{ secrets.NODE_PORT }}
+      DB_URL: ${{ secrets.DB_URL }}
+      DB: ${{ secrets.DB }}
+      CERT_PATH: ${{ secrets.CERT_PATH }}
+      MOSQUITTO_BROKER_URL: ${{ secrets.MOSQUITTO_BROKER_URL }}
     steps:
     - run: echo "running_container_list=$(echo $(docker ps --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
     - run: echo "all_containers_list=$(echo $(docker ps -a --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
@@ -28,8 +34,8 @@ jobs:
       run: docker rmi $NODE_IMAGE:latest
     
     - uses: actions/checkout@v2
-    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
-    - run: docker run -p $NODE_PORT:$NODE_PORT -d --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE
+    - run: docker build . --build-arg NODE_PORT=$NODE_PORT --build-arg DB_URL=$DB_URL --build-arg DB=$DB --build-arg CERT_PATH=$CERT_PATH --build-arg MOSQUITTO_BROKER_URL=$MOSQUITTO_BROKER_URL -t $NODE_IMAGE
+    - run: docker run -p $NODE_PORT:$NODE_PORT -d -v /certs:/app/certs --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE
 
   build_for_jasmine:
     name: Jasmine's Build
@@ -40,6 +46,10 @@ jobs:
       NODE_CONTAINER: 'node_jasmine'
       NODE_IMAGE: 'node-jasmine'
       NODE_PORT: ${{ secrets.NODE_PORT }}
+      DB_URL: ${{ secrets.DB_URL }}
+      DB: ${{ secrets.DB }}
+      CERT_PATH: ${{ secrets.CERT_PATH }}
+      MOSQUITTO_BROKER_URL: ${{ secrets.MOSQUITTO_BROKER_URL }}
     steps:
     - run: echo "running_container_list=$(echo $(docker ps --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
     - run: echo "all_containers_list=$(echo $(docker ps -a --filter "name=$NODE_CONTAINER"))" >> $GITHUB_ENV
@@ -57,5 +67,5 @@ jobs:
       run: docker rmi $NODE_IMAGE:latest
       
     - uses: actions/checkout@v2
-    - run: docker build . --build-arg NODE_PORT=$NODE_PORT -t $NODE_IMAGE
-    - run: docker run -p $NODE_PORT:$NODE_PORT -d --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE
+    - run: docker build . --build-arg NODE_PORT=$NODE_PORT --build-arg DB_URL=$DB_URL --build-arg DB=$DB --build-arg CERT_PATH=$CERT_PATH --build-arg MOSQUITTO_BROKER_URL=$MOSQUITTO_BROKER_URL -t $NODE_IMAGE
+    - run: docker run -p $NODE_PORT:$NODE_PORT -d -v /certs:/app/certs --restart unless-stopped --name $NODE_CONTAINER $NODE_IMAGE
