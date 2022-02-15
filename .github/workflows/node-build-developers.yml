@@ -3,6 +3,7 @@ name: node-build-developers
 on: 
   pull_request:
     types: [ closed ]
+    
 jobs:
   build_for_dany:
     name: Dany's Build
