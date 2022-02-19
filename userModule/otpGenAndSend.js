@@ -44,7 +44,7 @@ async function generateOtp(emailId){
     const authValues = {
         'emailId': emailId,
         'otp': otp,
-        'expiryTime': expiryTime,   
+        'expiryTime': expiryTime,
         '@metadata': {
             '@collection': 'Authorizer'
         }

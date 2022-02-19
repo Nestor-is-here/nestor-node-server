@@ -56,6 +56,8 @@ const authOptions = {
     password: ''
 };
 const store = new DocumentStore(server_options.raven_url, server_options.db_name, authOptions)
+const conventions = store.conventions
+conventions.storeDatesInUtc = true
 store.initialize()
 
 // listening 

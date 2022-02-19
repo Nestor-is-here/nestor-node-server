@@ -12,32 +12,25 @@ otpValidation.use(express.json())
 otpValidation.route('/').post(async(req,res) => {
 
     const otp = req.body.otp
-    console.log("otpfrmReq ::::"+otp)
     const emailId = req.body.email
+    const timeUpdate = new Date(Date.now())
     const session = store.openSession()
-    const otpInDB = await session.query({collection:'Authorizer'})
-        .selectFields('otp')
+    try{
+        let record = await session.query({collection:'Authorizer'})
+        .selectFields(['id'])
         .whereEquals('emailId',emailId)
-        .orderByDescending('expiryTime')
-        .first()
-        .then((otpVal) => {
-            console.log("otpVal"+otpVal)
-            return otpVal
-        })
-        .catch((err) => {
-            console.log("Error in receiving data from collection")
-        })
-    console.log("checking otpReq and otpDB are same")    
-    console.log("otpfrmDB::"+otpInDB)
-    if(otp == otpInDB.otp){
-        expiryTime = new Date(Date.now())
-        console.log("expiryTime updated after otp usage"+ expiryTime)
-        session.saveChanges()
-        res.status(200).send("Valid user")
-    }else{
-        res.status(500).send("Invalid User")
-    }
-
+        .andAlso()
+        .whereGreaterThanOrEqual('expiryTime', timeUpdate)
+        .andAlso()
+        .whereEquals('otp',otp)
+        .firstOrNull()
+        console.log(record)
+        session.advanced.patch(record,'expiryTime',timeUpdate)
+        await session.saveChanges()
+        res.status(200).send("Valid User!!")
+    } catch(err){
+        res.status(500).send("Invalid user!!")
+    }   
 })
 
 export { otpValidation }
