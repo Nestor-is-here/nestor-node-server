@@ -1,8 +1,17 @@
 import express  from 'express'
+
+// DB Driver import
 import { DocumentStore } from 'ravendb'
+
+// for private.js
+import * as fs from 'fs'
+
+// Endpoint imports
 import { createUser } from './userModule/createUser.js'
 import { getUsers } from './userModule/getUsers.js'
-import * as fs from 'fs'
+import { userExists } from './userModule/userExists.js'
+import { otpGenAndSend } from './userModule/otpGenAndSend.js'
+import { otpValidation } from './userModule/otpValidation.js'
 
 
 // express app initialization
@@ -14,6 +23,10 @@ app.get('/', (req,res) => {
 // Routes
 app.use('/createUser', createUser)
 app.use('/getUsers',getUsers)
+app.use('/userExists',userExists)
+app.use('/otpGenAndSend',otpGenAndSend)
+app.use('/validateOtp',otpValidation)
+
 const server_options = {
     'cert_path': undefined,
     'raven_url': undefined,
@@ -23,9 +36,9 @@ const server_options = {
 
 if( fs.existsSync('./private.js')) {
     let { debug_options } = await import('./private.js')
-   server_options.cert_path = debug_options.cert_path,
-   server_options.db_name = debug_options.db_name,
-   server_options.raven_url = debug_options.raven_url,
+   server_options.cert_path = debug_options.cert_path
+   server_options.db_name = debug_options.db_name
+   server_options.raven_url = debug_options.raven_url
    server_options.port = debug_options.port
 }
 else {
@@ -34,7 +47,6 @@ else {
     server_options.db_name = process.env.DB
     server_options.raven_url = process.env.DB_URL
     server_options.port = process.env.NODE_PORT
-    console.log(server_options)
 }
 
 // Raven Connection
@@ -44,6 +56,8 @@ const authOptions = {
     password: ''
 };
 const store = new DocumentStore(server_options.raven_url, server_options.db_name, authOptions)
+const conventions = store.conventions
+conventions.storeDatesInUtc = true
 store.initialize()
 
 // listening 
