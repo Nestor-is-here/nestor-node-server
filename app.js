@@ -13,7 +13,7 @@ import { getUsers } from './userModule/getUsers.js'
 import { userExists } from './userModule/userExists.js'
 import { otpGenAndSend } from './userModule/otpGenAndSend.js'
 import { prototypeSwitch } from './labPrototypes/prototypeRoute.js'
-import * as fs from 'fs'
+import { switchingMotor } from './labPrototypes/prototypeSwitchForTank.js'
 import { otpValidation } from './userModule/otpValidation.js'
 
 
@@ -30,6 +30,8 @@ app.use('/userExists',userExists)
 app.use('/otpGenAndSend',otpGenAndSend)
 app.use('/prototypeSwitch', prototypeSwitch)
 app.use('/validateOtp',otpValidation)
+app.use('/tankControl',switchingMotor)
+
 
 const server_options = {
     'cert_path': undefined,

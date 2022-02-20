@@ -1,5 +1,5 @@
 import express from 'express'
-import { store } from '../app.js'
+import { store,mqPublisher } from '../app.js'
 
 let switchingMotor = express.Router()
 
@@ -10,14 +10,14 @@ switchingMotor.use(express.urlencoded({
 switchingMotor.use(express.json())
 
 // store threshold value set by user
-switchingMotor.route('/').post(async(req,res) => {
+switchingMotor.route('/getThreshold').post(async(req,res) => {
 
     const thresholdValue = req.body.thresholdValue
     console.log("Threshold set :: "+thresholdValue)
     const session = store.openSession()
 
     let tankParams = {
-        'deviceId' : '0100',
+        'deviceId' : '0404',
         'thresholdLevel' : thresholdValue,
         'pumpState' : false,
         'waterLevel' : 90,
@@ -33,68 +33,49 @@ switchingMotor.route('/').post(async(req,res) => {
     res.status(res.statusCode).send(res.statusMessage)
 })
 
-switchingMotor.route('/').post(async(req,res) => {
+switchingMotor.route('/switchMotor').post(async(req,res) => {
 
     const waterLevel = req.body.level
-    console.log("Waterlevel in tank ::"+waterLevel)
-    const deviceId = req.body.deviceId
+    console.log("Waterlevel frm req::"+waterLevel)
+    const sensorDeviceId = req.body.sensorDeviceId
+    const sensorApplianceId = req.body.sensorApplianceId
+    const switchDeviceId = req.body.switchDeviceId
+    const switchApplianceId = req.body.switchApplianceId 
     const session = store.openSession()
     
-    session.query({collection: 'labPrototypeTank'})
-    .selectFields('thresholdLevel','waterLevel','pumpSwitch')
-    .whereEquals(deviceId,'deviceId')
-    .first()
-    .then((result) => {
-        if(waterLevel <= result.thresholdLevel){
-            session.query({collection: 'prototypes'})
-            .selectFields('appliances')
-            //now all switches are in one device(nodemcu) for test purposes
-            .whereEquals(deviceId,pumpSwitch.deviceId)
-            .then((appliances) => {
-                for (appliance in appliances){
-                    if(appliance.applianceId  == pumpSwitch.applianceId){
-                        appliance.state = true
-                        mqPublisher.publish('test', appliance.state.toString())
-                    }
-                }
-            })
-            .then(() => {
+    let result = await session.query({collection : 'prototypes'})
+    .selectFields(['appliances','id'])
+    .whereEquals('deviceId',sensorDeviceId)
+    .firstOrNull()
+    console.log(result)
+    if(result != null){
+        var switchState = await session.query({collection : 'prototypes'})
+        .selectFields(['appliances','id'])    
+        .whereEquals('deviceId',switchDeviceId)
+        .firstOrNull()
+        console.log(switchState)
+        if(switchState != null){
+            if(waterLevel <= result.appliances[sensorApplianceId]['threshold%']){
+                var motorControl = true
+                session.advanced.patch(switchState.id,`appliances.${switchApplianceId}.state`,motorControl)
                 session.saveChanges()
-            })    
-        }else{
-            result.pumpState = false
+                mqPublisher.publish('test', motorControl.toString())
+            }else if(waterLevel == 100){
+                var motorControl = false
+                session.advanced.patch(switchState.id,`appliances.${switchApplianceId}.state`,motorControl)
+                session.saveChanges()
+                mqPublisher.publish('test', motorControl.toString())
+            }               
         }
-        result.waterLevel = waterLevel
-    })
-    .then(() => {
+        session.advanced.patch(result.id,`appliances.${sensorApplianceId}.level%`,waterLevel)
         session.saveChanges()
-    })
+        res.status(200)
+    }else{
+        res.status(500)
+    }
     
+    res.send()
 })
 
-switchingMotor.route('/').post(async(req,res) => {
-
-    const waterLevel = req.body.level
-    console.log("Waterlevel in tank ::"+waterLevel)
-    const deviceId = req.body.deviceId
-    const session = store.openSession()
     
-    session.query({collection: 'labPrototypeTank'})
-    .selectFields('thresholdLevel','waterLevel','pumpSwitch')
-    .whereEquals(deviceId,'deviceId')
-    .first()
-    .then((result) => {
-        if(waterLevel <= result.thresholdLevel){
-
-            result.pumpState = true
-            mqPublisher.publish('test', result.pumpState.toString())
-        }else{
-            result.pumpState = false
-        }
-        result.waterLevel = waterLevel
-    })
-    .then(() => {
-        session.saveChanges()
-    })
-    
-})
+export { switchingMotor }
