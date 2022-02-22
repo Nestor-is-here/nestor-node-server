@@ -1,11 +1,21 @@
 import express  from 'express'
+
+// DB Driver import
 import { DocumentStore } from 'ravendb'
+
+// MQTT Clinet class import
 import { mqClient } from './labPrototypes/mqttClient.js'
+
+// for private.js
+import * as fs from 'fs'
+
+// Endpoint imports
 import { createUser } from './userModule/createUser.js'
 import { getUsers } from './userModule/getUsers.js'
+import { userExists } from './userModule/userExists.js'
 import { otpGenAndSend } from './userModule/otpGenAndSend.js'
 import { prototypeSwitch } from './labPrototypes/prototypeRoute.js'
-import * as fs from 'fs'
+import { otpValidation } from './userModule/otpValidation.js'
 
 
 // express app initialization
@@ -17,8 +27,11 @@ app.get('/', (req,res) => {
 // Routes
 app.use('/createUser', createUser)
 app.use('/getUsers',getUsers)
+app.use('/userExists',userExists)
 app.use('/otpGenAndSend',otpGenAndSend)
 app.use('/prototypeSwitch', prototypeSwitch)
+app.use('/validateOtp',otpValidation)
+
 const server_options = {
     'cert_path': undefined,
     'raven_url': undefined,
@@ -51,6 +64,8 @@ const authOptions = {
     password: ''
 };
 const store = new DocumentStore(server_options.raven_url, server_options.db_name, authOptions)
+const conventions = store.conventions
+conventions.storeDatesInUtc = true
 store.initialize()
 
 
