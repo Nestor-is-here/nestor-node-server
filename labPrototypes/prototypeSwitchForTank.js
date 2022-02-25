@@ -41,15 +41,16 @@ switchingMotor.route('/switchMotor').post(async(req,res) => {
     const sensorApplianceId = req.body.sensorApplianceId
     const switchDeviceId = req.body.switchDeviceId
     const switchApplianceId = req.body.switchApplianceId 
-    const session = store.openSession()
+    const resSession = store.openSession()
     
-    let result = await session.query({collection : 'prototypes'})
+    let result = await resSession.query({collection : 'prototypes'})
     .selectFields(['appliances','id'])
     .whereEquals('deviceId',sensorDeviceId)
     .firstOrNull()
     console.log(result)
     if(result != null){
-        var switchState = await session.query({collection : 'prototypes'})
+        const switchSession = store.openSession()
+        var switchState = await switchSession.query({collection : 'prototypes'})
         .selectFields(['appliances','id'])    
         .whereEquals('deviceId',switchDeviceId)
         .firstOrNull()
@@ -57,18 +58,19 @@ switchingMotor.route('/switchMotor').post(async(req,res) => {
         if(switchState != null){
             if(waterLevel <= result.appliances[sensorApplianceId]['threshold%']){
                 var motorControl = true
-                session.advanced.patch(switchState.id,`appliances.${switchApplianceId}.state`,motorControl)
-                session.saveChanges()
+                console.log("ID is"+switchState.id)
+                //switchSession.advanced.patch(switchState.id,`appliances.${switchApplianceId}.state`,motorControl)
+                switchSession.advanced.patch(switchState.id,`appliances.${switchApplianceId}.state`,motorControl)
                 mqPublisher.publish('test', motorControl.toString())
             }else if(waterLevel == 100){
                 var motorControl = false
-                session.advanced.patch(switchState.id,`appliances.${switchApplianceId}.state`,motorControl)
-                session.saveChanges()
+                switchSession.advanced.patch(switchState.id,`appliances.${switchApplianceId}.state`,motorControl)
                 mqPublisher.publish('test', motorControl.toString())
             }               
         }
-        session.advanced.patch(result.id,`appliances.${sensorApplianceId}.level%`,waterLevel)
-        session.saveChanges()
+        resSession.advanced.patch(result.id,`appliances.${sensorApplianceId}.level%`,waterLevel)
+        resSession.saveChanges()
+        switchSession.saveChanges()
         res.status(200)
     }else{
         res.status(500)
