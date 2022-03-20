@@ -16,16 +16,7 @@ switchingMotor.route('/getThreshold').post(async(req,res) => {
     console.log("Threshold set :: "+thresholdValue)
     const session = store.openSession()
 
-    let tankParams = {
-        'deviceId' : '0404',
-        'thresholdLevel' : thresholdValue,
-        'pumpState' : false,
-        'waterLevel' : 90,
-        '@metadata': {
-            '@collection': 'labPrototypeTank'
-        }             
-    }
-    session.store(tankParams,"labPrototypeTank|")
+    //update threshold set by the user
     session.saveChanges()
 
     res.statusCode = 200
@@ -37,47 +28,44 @@ switchingMotor.route('/switchMotor').post(async(req,res) => {
 
     const waterLevel = req.body.level
     console.log("Waterlevel frm req::"+waterLevel)
-    const sensorDeviceId = req.body.sensorDeviceId
+    const sensorDeviceId = `devices/${req.body.sensorDeviceId}`
     const sensorApplianceId = req.body.sensorApplianceId
-    const switchDeviceId = req.body.switchDeviceId
-    const switchApplianceId = req.body.switchApplianceId 
-    const resSession = store.openSession()
+    const session = store.openSession()
+    let statusMessage = "Threshold not reached"
     
-    let result = await resSession.query({collection : 'prototypes'})
-    .selectFields(['appliances','id'])
-    .whereEquals('deviceId',sensorDeviceId)
-    .firstOrNull()
-    console.log(result)
-    if(result != null){
-        const switchSession = store.openSession()
-        var switchState = await switchSession.query({collection : 'prototypes'})
-        .selectFields(['appliances','id'])    
-        .whereEquals('deviceId',switchDeviceId)
+    let sensorDetails = await session.query({collection : 'Devices'})
+        .whereEquals('id',sensorDeviceId)
         .firstOrNull()
-        console.log(switchState)
-        if(switchState != null){
-            if(waterLevel <= result.appliances[sensorApplianceId]['threshold%']){
-                var motorControl = true
-                console.log("ID is"+switchState.id)
-                //switchSession.advanced.patch(switchState.id,`appliances.${switchApplianceId}.state`,motorControl)
-                switchSession.advanced.patch(switchState.id,`appliances.${switchApplianceId}.state`,motorControl)
-                mqPublisher.publish('test', motorControl.toString())
-            }else if(waterLevel == 100){
-                var motorControl = false
-                switchSession.advanced.patch(switchState.id,`appliances.${switchApplianceId}.state`,motorControl)
-                mqPublisher.publish('test', motorControl.toString())
-            }               
-        }
-        resSession.advanced.patch(result.id,`appliances.${sensorApplianceId}.level%`,waterLevel)
-        resSession.saveChanges()
-        switchSession.saveChanges()
-        res.status(200)
+
+    const switchDeviceId = sensorDetails.appliances[sensorApplianceId].motorSwitchDetails.deviceId
+    const switchApplianceId = sensorDetails.appliances[sensorApplianceId].motorSwitchDetails.applianceId    
+    
+    let switchDetails = await session.query({collection : 'Devices'})
+        .whereEquals('id',switchDeviceId)
+        .firstOrNull()    
+      
+    if(sensorDetails != null){
+        if(waterLevel <= sensorDetails.appliances[sensorApplianceId].thresholdPercent){
+            if(switchDetails.operationState == true && switchDetails.appliances[switchApplianceId].state == false){
+                switchDetails.appliances[switchApplianceId].state = true 
+                mqPublisher.publish('test', switchDetails.appliances[switchApplianceId].state.toString())
+                statusMessage = "Motor switched ON"
+            }
+        }else if(waterLevel == 100){
+            if(switchDetails.operationState == true && switchDetails.appliances[switchApplianceId].state == true){
+                switchDetails.appliances[switchApplianceId].state = false
+                mqPublisher.publish('test', switchDetails.appliances[switchApplianceId].state.toString())
+                statusMessage = "Motor switched OFF"
+            }
+        }    
+        sensorDetails.appliances[sensorApplianceId].levelPercent = waterLevel   
+        res.status(200).send(statusMessage)
     }else{
-        res.status(500)
+        res.status(500).send("Error controlling motor switch")
     }
     
+    await session.saveChanges()  
     res.send()
 })
-
     
 export { switchingMotor }
